@@ -133,6 +133,19 @@ async function run() {
       res.send(result);
     });
 
+    app.post("/menu", verifyJWT, verifyAdmin, async (req, res) => {
+      const newItem = req.body;
+      const result = await menuCollection.insertOne(newItem);
+      res.send(result);
+    });
+
+    app.delete("/menu/:id", verifyJWT, verifyAdmin, async (req, res) => {
+      const item = req.params.id;
+      const query = { _id: new ObjectId(item) };
+      const result = await menuCollection.deleteOne(query);
+      res.send(result);
+    });
+
     // reviews apis
     app.get("/reviews", async (req, res) => {
       const result = await reviewCollection.find().toArray();
