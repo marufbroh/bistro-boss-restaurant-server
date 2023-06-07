@@ -217,6 +217,24 @@ async function run() {
       res.send({ insertResult, deleteResult });
     });
 
+    // admin stats
+    app.get("/admin-stats", verifyJWT, verifyAdmin, async (req, res) => {
+      const users = await usersCollection.estimatedDocumentCount();
+      const products = await menuCollection.estimatedDocumentCount();
+      const orders = await paymentCollection.estimatedDocumentCount();
+      const payments = await paymentCollection.find().toArray();
+      const revenue = parseFloat(
+        payments.reduce((sum, payment) => sum + payment.price, 0)
+      ).toFixed(2);
+
+      res.send({
+        users,
+        products,
+        orders,
+        revenue,
+      });
+    });
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
